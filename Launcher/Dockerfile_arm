@@ -26,5 +26,7 @@ RUN dos2unix /app/run.sh && \
 chmod +x /app/run.sh && \
 chmod +x /app/Launcher
 
+EXPOSE 5000
+
 #Run the app
 ENTRYPOINT [ "/app/run.sh" ]
