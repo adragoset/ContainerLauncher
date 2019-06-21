@@ -1,0 +1,34 @@
+steps:
+  - label: ':hammer: Build Binaries .net'
+    command: 'chmod +x Build/build_binaries.sh && Build/build_binaries.sh -n cluster_network -s $BUILDKITE_COMMIT -b $BUILDKITE_BRANCH -t $BUILDKITE_TAG'
+    plugins:
+      docker-login#v2.0.0:
+        username: devopsintralox
+        password-env: DOCKER_LOGIN_PASSWORD
+    artifact_paths:
+    - "pkg/*"
+    agents:
+      arch: "x86"
+      cuda: "true"
+
+  - wait
+
+  - label: ':hammer: Build x64 App Container'
+    command: 'chmod +x Build/build_x64.sh && Build/build_x64.sh -n cluster_network -s $BUILDKITE_COMMIT -b $BUILDKITE_BRANCH -t $BUILDKITE_TAG'
+    plugins:
+      docker-login#v2.0.0:
+        username: devopsintralox
+        password-env: DOCKER_LOGIN_PASSWORD
+    agents:
+      arch: "x86"
+      cuda: "true"
+
+  - label: ':hammer: Build arm64 App Container'
+    command: 'chmod +x Build/build_arm.sh && Build/build_arm.sh -n cluster_network -s $BUILDKITE_COMMIT -b $BUILDKITE_BRANCH -t $BUILDKITE_TAG'
+    plugins:
+      docker-login#v2.0.0:
+        username: devopsintralox
+        password-env: DOCKER_LOGIN_PASSWORD
+    agents:
+      arch: "arm64"
+      cuda: "true"
