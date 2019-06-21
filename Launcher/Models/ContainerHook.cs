@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Launcher.Models
 {
@@ -168,9 +169,9 @@ namespace Launcher.Models
             await this.client.Images.DeleteImageAsync(container.Image, delPara, this.cancelTokenSource.Token);
         }
 
-        public async Task<bool> StartProcess()
+        public async Task<bool> StartProcess(ILogger logger)
         {
-            this.pullImage();
+            this.pullImage(logger);
             var updatedConfig = await this.buildConfigFolders();
             var container = await this.container();
             if (container == null)
@@ -233,13 +234,14 @@ namespace Launcher.Models
             }
         }
 
-        private async void pullImage()
+        private async void pullImage(ILogger logger)
         {
+
             await client.Images.CreateImageAsync(new ImagesCreateParameters
             {
                 FromImage = this.Name,
                 Tag = this.Tag,
-            }, null, new Progress(), this.cancelTokenSource.Token);
+            }, null, new Progress(logger), this.cancelTokenSource.Token);
         }
 
         private async Task<string> createContainer()
@@ -427,9 +429,15 @@ namespace Launcher.Models
 
         class Progress : IProgress<JSONMessage>
         {
+            private ILogger logger;
+
+            public Progress(ILogger logger)
+            {
+                this.logger = logger;
+            }
             public void Report(JSONMessage value)
             {
-
+                logger.LogInformation(value.Stream);
             }
         }
     }

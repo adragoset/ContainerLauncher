@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Launcher.Models
 {
@@ -16,7 +17,7 @@ namespace Launcher.Models
 
         Task<bool> IsFailed();
 
-        Task<bool> StartProcess();
+        Task<bool> StartProcess(ILogger logger);
 
         Task<bool> StopProcess();
 
