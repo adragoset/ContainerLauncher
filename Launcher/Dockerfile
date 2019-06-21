@@ -15,12 +15,12 @@ mkdir /app_launcher
 
 ADD Launcher/run.sh /app/run.sh
 
-
-WORKDIR /temp
+WORKDIR /
 RUN tar -xvzf /launcher_binaries.tar.gz && \
 rm /launcher_binaries.tar.gz && \
-cp -a /temp/x64/. /app && \
-rm -rf /temp
+rm -rf /app/arm64 && \
+mv /app/x64/* /app && \
+rm -rf /app/x64
 
 RUN dos2unix /app/run.sh && \
 chmod +x /app/run.sh && \
