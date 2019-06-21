@@ -15,12 +15,12 @@ while getopts "n:s:b:t:" opt; do
   esac
 done
 
-docker build -t devopsintralox/containerLauncher:${SHA1}_arm -f Launcher/Dockerfile_arm --network=${NET} .
-docker push devopsintralox/containerLauncher:${SHA1}_arm
+docker build -t devopsintralox/containerlauncher:${SHA1}_arm -f Launcher/Dockerfile_arm --network=${NET} .
+docker push devopsintralox/containerlauncher:${SHA1}_arm
 if [ "${TAG}" != "" ]; then
-    docker tag devopsintralox/containerLauncher:${SHA1}_arm devopsintralox/containerLauncher:${TAG}_arm
-    docker push devopsintralox/containerLauncher:${TAG}_arm
+    docker tag devopsintralox/containerlauncher:${SHA1}_arm devopsintralox/containerlauncher:${TAG}_arm
+    docker push devopsintralox/containerlauncher:${TAG}_arm
 else
-    docker tag devopsintralox/containerLauncher:${SHA1}_arm devopsintralox/containerLauncher:${BRANCH}_arm
-    docker push devopsintralox/containerLauncher:${BRANCH}_arm
+    docker tag devopsintralox/containerlauncher:${SHA1}_arm devopsintralox/containerlauncher:${BRANCH}_arm
+    docker push devopsintralox/containerlauncher:${BRANCH}_arm
 fi

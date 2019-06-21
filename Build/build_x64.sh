@@ -19,12 +19,12 @@ mkdir pkg/
 buildkite-agent artifact download pkg/launcher_binaries.tar.gz pkg/ --step ":hammer: Build Binaries .net"
 cp pkg/launcher_binaries.tar.gz Build/launcher_binaries.tar.gz
 
-docker build -t devopsintralox/containerLauncher:${SHA1} -f Launcher/Dockerfile --network=${NET} .
-docker push devopsintralox/containerLauncher:${SHA1}
+docker build -t devopsintralox/containerlauncher:${SHA1} -f Launcher/Dockerfile --network=${NET} .
+docker push devopsintralox/containerlauncher:${SHA1}
 if [ "${TAG}" != "" ]; then
-    docker tag devopsintralox/containerLauncher:${SHA1} devopsintralox/containerLauncher:${TAG}
-    docker push devopsintralox/containerLauncher:${TAG} 
+    docker tag devopsintralox/containerlauncher:${SHA1} devopsintralox/containerlauncher:${TAG}
+    docker push devopsintralox/containerlauncher:${TAG} 
 else
-    docker tag devopsintralox/containerLauncher:${SHA1} devopsintralox/containerLauncher:${BRANCH}
-    docker push devopsintralox/containerLauncher:${BRANCH}
+    docker tag devopsintralox/containerlauncher:${SHA1} devopsintralox/containerlauncher:${BRANCH}
+    docker push devopsintralox/containerlauncher:${BRANCH}
 fi
