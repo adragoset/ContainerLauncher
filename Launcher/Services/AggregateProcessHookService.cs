@@ -13,11 +13,13 @@ namespace Launcher.Services
     public class AggregateProcessHookService : IDisposable
     {
         private Dictionary<string, ProcessHookService> processList;
+        private ILogger<AggregateProcessHookService> logger;
         private bool disposedValue = false; // To detect redundant calls
 
-        public AggregateProcessHookService()
+        public AggregateProcessHookService(ILogger<AggregateProcessHookService> logger)
         {
             this.processList = new Dictionary<string, ProcessHookService>();
+            this.logger = logger;
         }
 
         public List<string> Processes()
@@ -37,6 +39,7 @@ namespace Launcher.Services
 
         public void StartServices() {
             foreach(var key in this.processList.Keys) {
+               this.logger.LogInformation($"Starting Service:{key}");
                this.processList[key].Start().Wait();
             }
         }
@@ -48,13 +51,17 @@ namespace Launcher.Services
 
         public static AggregateProcessHookService AggregateProcessHookServiceFactory(IServiceProvider services) {
             var config = services.GetService<IConfiguration>();
-            var aggregateServiceList = new AggregateProcessHookService();
+            var configLogger = services.GetService<ILogger<AggregateProcessHookService>>();
+            var aggregateServiceList = new AggregateProcessHookService(configLogger);
+
+            configLogger.LogInformation("Read config");
             var rootConfigPath = config.GetValue<string>("ROOT_CONFIG_PATH");
             var destConfigPath = config.GetValue<string>("DEST_CONFIG_PATH");
             var mountConfigPath = config.GetValue<string>("MOUNT_CONFIG_PATH");
             var serviceSection = config.GetSection("services").GetChildren();
 
             foreach(var child in serviceSection) {
+                configLogger.LogInformation($"Reading config for service:{child}");
                 var dockerClient = services.GetService<DockerClient>();
                 var logger = services.GetService<ILogger<ProcessHookService>>();
                 var hookConfig = new ContainerHookConfig();

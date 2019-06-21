@@ -29,7 +29,7 @@ namespace Launcher.Services
         public async Task<bool> Start()
         {
             using(this.logger.BeginScope(this.processHook.SafeName)) {
-                this.logger.LogInformation($"Starting container:{this.processHook.SafeName}");
+                this.logger.LogInformation($"Starting container:{this.processHook.ImageName}");
                 return await this.processHook.StartProcess(this.logger);
             }
         }
