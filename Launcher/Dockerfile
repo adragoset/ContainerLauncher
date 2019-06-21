@@ -9,18 +9,18 @@ COPY Build/launcher_binaries.tar.gz /launcher_binaries.tar.gz
 
 RUN apt-get update && \
 apt-get install dos2unix && \
-mkdir /tmp && \
+mkdir /temp && \
 mkdir /app && \
 mkdir /app_launcher
 
 ADD Launcher/run.sh /app/run.sh
 
 
-WORKDIR /tmp
+WORKDIR /temp
 RUN tar -xvzf /launcher_binaries.tar.gz && \
 rm /launcher_binaries.tar.gz && \
-cp -a /tmp/x64/. /app && \
-rm -rf /tmp
+cp -a /temp/x64/. /app && \
+rm -rf /temp
 
 RUN dos2unix /app/run.sh && \
 chmod +x /app/run.sh && \

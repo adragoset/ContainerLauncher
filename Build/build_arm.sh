@@ -15,6 +15,10 @@ while getopts "n:s:b:t:" opt; do
   esac
 done
 
+mkdir pkg/
+buildkite-agent artifact download pkg/launcher_binaries.tar.gz pkg/ --step ":hammer: Build Binaries .net"
+cp pkg/launcher_binaries.tar.gz Build/launcher_binaries.tar.gz
+
 docker build -t devopsintralox/containerlauncher:${SHA1}_arm -f Launcher/Dockerfile_arm --network=${NET} .
 docker push devopsintralox/containerlauncher:${SHA1}_arm
 if [ "${TAG}" != "" ]; then
