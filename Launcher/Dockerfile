@@ -8,7 +8,7 @@ MOUNT_CONFIG_PATH=/local
 COPY Build/launcher_binaries.tar.gz /launcher_binaries.tar.gz
 
 RUN apt-get update && \
-apt-get install dos2unix && \
+apt-get install dos2unix libssl1.0.0 zlib1g libkrb5-3 libicu60 && \
 mkdir /temp && \
 mkdir /app && \
 mkdir /app_launcher
