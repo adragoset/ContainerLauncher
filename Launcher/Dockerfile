@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:stretch-slim
 
 ENV CONFIG_PATH=/local \
 ROOT_CONFIG_PATH=/local \
