@@ -25,7 +25,7 @@ namespace Launcher
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             services.AddSingleton<DockerClient>((IServiceProvider svcs) => {  
                 var config = svcs.GetService<IConfiguration>();
-                return new DockerClientConfiguration(new Uri(config.GetValue<string>("unix:///var/run/docker.sock"))).CreateClient(); }
+                return new DockerClientConfiguration(new Uri(config.GetValue<string>("dockerEndpoint"))).CreateClient(); }
             );
             services.AddSingleton<AggregateProcessHookService>(AggregateProcessHookService.AggregateProcessHookServiceFactory);
             services.AddHostedService<HookLoggingService>();
