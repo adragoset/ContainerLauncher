@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Docker.DotNet;
+using Docker.DotNet.Models;
 using Launcher.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,10 +38,12 @@ namespace Launcher.Services
             return null;
         }
 
-        public void StartServices() {
-            foreach(var key in this.processList.Keys) {
-               this.logger.LogInformation($"Starting Service:{key}");
-               this.processList[key].Start().Wait();
+        public void StartServices()
+        {
+            foreach (var key in this.processList.Keys)
+            {
+                this.logger.LogInformation($"Starting Service:{key}");
+                this.processList[key].Start().Wait();
             }
         }
 
@@ -49,7 +52,8 @@ namespace Launcher.Services
             this.processList.Add(service.Name, service);
         }
 
-        public static AggregateProcessHookService AggregateProcessHookServiceFactory(IServiceProvider services) {
+        public static AggregateProcessHookService AggregateProcessHookServiceFactory(IServiceProvider services)
+        {
             var config = services.GetService<IConfiguration>();
             var configLogger = services.GetService<ILogger<AggregateProcessHookService>>();
             var aggregateServiceList = new AggregateProcessHookService(configLogger);
@@ -59,14 +63,20 @@ namespace Launcher.Services
             var destConfigPath = config.GetValue<string>("DEST_CONFIG_PATH");
             var mountConfigPath = config.GetValue<string>("MOUNT_CONFIG_PATH");
             var serviceSection = config.GetSection("services").GetChildren();
+            var dockerSection = config.GetSection("docker");
+            var email = dockerSection.GetValue<string>("email");
+            var username = dockerSection.GetValue<string>("username");
+            var password = config.GetValue<string>("DOCKER_PASSWORD");
 
-            foreach(var child in serviceSection) {
+            foreach (var child in serviceSection)
+            {
                 configLogger.LogInformation($"Reading config for service:{child}");
                 var dockerClient = services.GetService<DockerClient>();
                 var logger = services.GetService<ILogger<ProcessHookService>>();
                 var hookConfig = new ContainerHookConfig();
                 hookConfig.Capabilities = child.GetValue<List<string>>("capabilities");
-                if(rootConfigPath != null) {
+                if (rootConfigPath != null)
+                {
                     hookConfig.ConfigSrc = Path.Join(rootConfigPath, child.Key);
                     hookConfig.ConfigVolSrc = Path.Join(destConfigPath, child.Key);
                     hookConfig.ConfigVolDest = mountConfigPath;
@@ -90,6 +100,7 @@ namespace Launcher.Services
                 hookConfig.NetworkMode = child.GetValue<string>("networkMode");
                 hookConfig.Tag = child.GetValue<string>("imageTag");
                 hookConfig.SafeName = child.Key;
+                hookConfig.SetAuthConfig(email, username, password);
                 aggregateServiceList.AddProcess(new ProcessHookService(dockerClient, logger, hookConfig));
             }
             aggregateServiceList.StartServices();

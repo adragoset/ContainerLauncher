@@ -17,6 +17,7 @@ namespace Launcher.Models {
         public long MemCap;
         public long CpuPercent;
         public bool Privileged;
+        public AuthConfig AuthConfig;
         public RestartPolicyKind RestartPolicy { get; private set; }
 
         public void SetRestartPolicy(string policy) {
@@ -35,6 +36,14 @@ namespace Launcher.Models {
              else if(policy.ToLower() == "unless_stopped") {
                  this.RestartPolicy = RestartPolicyKind.UnlessStopped;
              }
+        }
+
+        public void SetAuthConfig(string email, string username, string password) {
+            this.AuthConfig = new AuthConfig() {
+                Email = email,
+                Username = username,
+                Password = password
+            };
         }
     }
 }

@@ -29,6 +29,7 @@ namespace Launcher.Models
         private bool disposedValue = false; // To detect redundant calls
         private readonly bool privileged = false;
         private readonly RestartPolicyKind restartPolicy;
+        private readonly AuthConfig authConfig;
         public string Name { get; private set; }
         public string Tag { get; private set; }
         public string ImageName
@@ -70,6 +71,7 @@ namespace Launcher.Models
             this.cpuPercent = config.CpuPercent;
             this.privileged = config.Privileged;
             this.restartPolicy = config.RestartPolicy;
+            this.authConfig = config.AuthConfig;
         }
 
         private void validate(ContainerHookConfig config)
@@ -241,7 +243,7 @@ namespace Launcher.Models
             {
                 FromImage = this.Name,
                 Tag = this.Tag,
-            }, null, new Progress(logger), this.cancelTokenSource.Token);
+            }, this.authConfig, new Progress(logger), this.cancelTokenSource.Token);
         }
 
         private async Task<string> createContainer()
