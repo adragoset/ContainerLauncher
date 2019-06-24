@@ -8,7 +8,7 @@ MOUNT_CONFIG_PATH=/local
 COPY Build/launcher_binaries.tar.gz /launcher_binaries.tar.gz
 
 RUN apt-get update && \
-apt-get remove docker docker-engine docker.io && \
+dpkg --remove docker docker-engine docker.io && \
 apt-get install -y dos2unix apt-transport-https ca-certificates curl software-properties-common && \
 mkdir /temp && \
 mkdir /app && \
