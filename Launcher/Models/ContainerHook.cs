@@ -173,7 +173,7 @@ namespace Launcher.Models
 
         public async Task<bool> StartProcess(ILogger logger)
         {
-            this.pullImage(logger);
+            await this.pullImage(logger);
             var updatedConfig = await this.buildConfigFolders();
             var container = await this.container();
             if (container == null)
@@ -236,7 +236,7 @@ namespace Launcher.Models
             }
         }
 
-        private async void pullImage(ILogger logger)
+        private async Task pullImage(ILogger logger)
         {
 
             await client.Images.CreateImageAsync(new ImagesCreateParameters
