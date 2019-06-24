@@ -364,9 +364,8 @@ namespace Launcher.Models
 
                 foreach (var file in srcFiles)
                 {
-                    var fileName = Path.GetFileName(file);
                     var relativePath = Path.GetRelativePath(this.configSrc, file);
-                    var destPath = Path.Combine(this.configVolSrc, relativePath, fileName);
+                    var destPath = Path.Combine(this.configVolSrc, relativePath);
                     if (File.Exists(destPath))
                     {
                         var srcFile = await File.ReadAllBytesAsync(file, this.cancelTokenSource.Token);
@@ -395,9 +394,8 @@ namespace Launcher.Models
 
                 foreach (var file in dirSearch(this.configVolSrc))
                 {
-                    var fileName = Path.GetFileName(file);
                     var relativePath = Path.GetRelativePath(this.configVolSrc, file);
-                    var destPath = Path.Combine(this.configSrc, relativePath, fileName);
+                    var destPath = Path.Combine(this.configSrc, relativePath);
 
                     if (!File.Exists(destPath))
                     {
