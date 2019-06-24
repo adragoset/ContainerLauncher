@@ -386,6 +386,11 @@ namespace Launcher.Models
                     }
                     else
                     {
+                        var dir = Path.GetDirectoryName(destPath);
+                        if (!Directory.Exists(dir))
+                        {
+                            Directory.CreateDirectory(dir);
+                        }
                         File.Copy(file, destPath);
                         updated = true;
                     }
