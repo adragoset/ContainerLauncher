@@ -61,7 +61,7 @@ namespace Launcher.Services
             return await this.processHook.IsFailed();
         }
 
-        public async void ForwardProcessLogs()
+        public async Task ForwardProcessLogs()
         {
             Stream logStream = await this.LogStream();
             logger.LogInformation($"ForwardProcess Logs for:{processHook.SafeName}");

@@ -10,13 +10,15 @@ namespace Launcher.Services
     public class HookLoggingService : IHostedService, IDisposable
     {
         private readonly ILogger<HookLoggingService> _logger;
-        private Timer _timer;
+        private readonly CancellationTokenSource cancelToken;
+        private Task _timer;
         private AggregateProcessHookService procHooks;
 
         public HookLoggingService(AggregateProcessHookService procHooks, ILogger<HookLoggingService> _logger)
         {
             this.procHooks = procHooks;
             this._logger = _logger;
+            this.cancelToken = new CancellationTokenSource();
         }
 
         public void Dispose()
@@ -24,33 +26,35 @@ namespace Launcher.Services
             _timer?.Dispose();
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Log passthrough Service is starting.");
-
-            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
-
-            return Task.CompletedTask;
-        }
-
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Log passthrough Service is stopping.");
-
-            _timer?.Change(Timeout.Infinite, 0);
-
-            return Task.CompletedTask;
+            cancelToken.Cancel();
+            return _timer;
         }
 
-        private void DoWork(object state)
+        public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer?.Change(Timeout.Infinite, 0);
-            foreach(var serviceKey in this.procHooks.Processes()) {
+            return Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await DoWork();
+                    await Task.Delay(5000, cancellationToken);
+                    if (cancellationToken.IsCancellationRequested)
+                        break;
+                }
+            });
+        }
+
+        private async Task DoWork()
+        {
+            foreach (var serviceKey in this.procHooks.Processes())
+            {
                 _logger.LogInformation($"Logging information for:{serviceKey}");
                 var service = this.procHooks.GetProcess(serviceKey);
-                service.ForwardProcessLogs();
+                await service.ForwardProcessLogs();
             }
-            _timer?.Change(5000, 5000);
         }
     }
 }
