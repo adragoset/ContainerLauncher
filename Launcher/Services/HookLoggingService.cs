@@ -44,9 +44,9 @@ namespace Launcher.Services
 
         private void DoWork(object state)
         {
-            _logger.LogInformation("Recording Logs.");
             _timer?.Change(Timeout.Infinite, 0);
             foreach(var serviceKey in this.procHooks.Processes()) {
+                _logger.LogInformation($"Logging information for:{serviceKey}");
                 var service = this.procHooks.GetProcess(serviceKey);
                 service.ForwardProcessLogs();
             }
