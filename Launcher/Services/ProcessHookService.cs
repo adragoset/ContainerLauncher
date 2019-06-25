@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
 using Launcher.Models;
@@ -60,10 +61,9 @@ namespace Launcher.Services
             return await this.processHook.IsFailed();
         }
 
-        public async Task ForwardProcessLogs()
+        public async Task ForwardProcessLogs(CancellationToken token)
         {
             Stream logStream = await this.LogStream();
-            logger.LogInformation($"ForwardProcess Logs for:{processHook.SafeName}");
             if (logStream != null)
             {
                 var stream = new StreamReader(logStream);
@@ -72,6 +72,10 @@ namespace Launcher.Services
                 {
                     while ((line = stream.ReadLine()) != null)
                     {
+                        if(token.IsCancellationRequested) {
+                            break;
+                        }
+
                         logger.LogInformation(line);
                     }
                 }
