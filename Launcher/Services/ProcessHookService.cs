@@ -52,8 +52,7 @@ namespace Launcher.Services
                     this.logStream = await this.processHook.GetLogs();
                 }
             }
-            var result = await new Task<Stream>(() => this.logStream);
-            return result;
+            return this.logStream;
         }
 
         public async Task<bool> Healthy()

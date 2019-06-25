@@ -51,7 +51,6 @@ namespace Launcher.Services
         {
             foreach (var serviceKey in this.procHooks.Processes())
             {
-                _logger.LogInformation($"Logging information for:{serviceKey}");
                 var service = this.procHooks.GetProcess(serviceKey);
                 await service.ForwardProcessLogs();
             }
