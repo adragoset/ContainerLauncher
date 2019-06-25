@@ -83,8 +83,8 @@ namespace Launcher.Services
                 }
                 hookConfig.CpuPercent = child.GetValue<long>("cpu");
                 hookConfig.MemCap = child.GetValue<long>("mem");
-                hookConfig.Privileged = child.GetValue<bool>("privileged");
-                hookConfig.SetRestartPolicy(child.GetValue<string>("restartPolicy"));
+                hookConfig.Privileged = child.GetValue<bool>("privileged", false);
+                hookConfig.SetRestartPolicy(child.GetValue<string>("restartPolicy", "no"));
 
                 hookConfig.EnvVariables = child.GetSection("env")
                 .GetChildren()
@@ -97,9 +97,10 @@ namespace Launcher.Services
                 .ToDictionary(x => x.Key, x => x.Value);
 
                 hookConfig.Name = child.GetValue<string>("imageName");
-                hookConfig.NetworkMode = child.GetValue<string>("networkMode");
+                hookConfig.NetworkMode = child.GetValue<string>("networkMode", "bridge");
                 hookConfig.Tag = child.GetValue<string>("imageTag");
                 hookConfig.SafeName = child.Key;
+                hookConfig.ForceUpgrade = child.GetValue("forceUpgrade", false);
                 hookConfig.SetAuthConfig(email, username, password);
                 aggregateServiceList.AddProcess(new ProcessHookService(dockerClient, logger, hookConfig));
             }

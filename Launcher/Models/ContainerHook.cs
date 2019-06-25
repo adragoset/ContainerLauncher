@@ -30,6 +30,7 @@ namespace Launcher.Models
         private readonly bool privileged = false;
         private readonly RestartPolicyKind restartPolicy;
         private readonly AuthConfig authConfig;
+        private bool forceUpgrade;
         public string Name { get; private set; }
         public string Tag { get; private set; }
         public string ImageName
@@ -72,6 +73,7 @@ namespace Launcher.Models
             this.privileged = config.Privileged;
             this.restartPolicy = config.RestartPolicy;
             this.authConfig = config.AuthConfig;
+            this.forceUpgrade = config.ForceUpgrade;
         }
 
         private void validate(ContainerHookConfig config)
@@ -183,7 +185,7 @@ namespace Launcher.Models
             }
             else
             {
-                if (container.Image != this.ImageName)
+                if (container.Image != this.ImageName || this.forceUpgrade)
                 {
                     return await this.upgradeProcess();
                 }

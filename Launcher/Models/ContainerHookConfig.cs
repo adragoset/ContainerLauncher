@@ -19,6 +19,7 @@ namespace Launcher.Models {
         public bool Privileged;
         public AuthConfig AuthConfig;
         public RestartPolicyKind RestartPolicy { get; private set; }
+        public bool ForceUpgrade = false;
 
         public void SetRestartPolicy(string policy) {
              if(policy == null) {
