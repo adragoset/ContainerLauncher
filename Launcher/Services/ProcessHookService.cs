@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Docker.DotNet;
@@ -29,7 +30,8 @@ namespace Launcher.Services
 
         public async Task<bool> Start()
         {
-            using(this.logger.BeginScope(this.processHook.SafeName)) {
+            using (this.logger.BeginScope(this.processHook.SafeName))
+            {
                 this.logger.LogInformation($"Starting container:{this.processHook.ImageName}");
                 return await this.processHook.StartProcess(this.logger);
             }
@@ -72,13 +74,30 @@ namespace Launcher.Services
                 {
                     while ((line = stream.ReadLine()) != null)
                     {
-                        if(token.IsCancellationRequested) {
+                        if (token.IsCancellationRequested)
+                        {
                             break;
                         }
-
-                        logger.LogInformation(line);
+                        
+                        logger.LogInformation(CleanInput(line));
                     }
                 }
+            }
+        }
+
+        static string CleanInput(string strIn)
+        {
+            // Replace invalid characters with empty strings.
+            try
+            {
+                return Regex.Replace(strIn, @"[^\w\.@-:]", "",
+                                     RegexOptions.None, TimeSpan.FromSeconds(1.5));
+            }
+            // If we timeout when replacing invalid characters, 
+            // we should return Empty.
+            catch (RegexMatchTimeoutException)
+            {
+                return String.Empty;
             }
         }
 
