@@ -61,12 +61,10 @@ namespace Launcher.Services
                     if(task.IsFaulted || task.IsCompleted || task.IsCompletedSuccessfully) {
                         task.Dispose();
                         this._subTasks[serviceKey] = service.ForwardProcessLogs(this._cancelToken.Token);
-                        this._subTasks[serviceKey].Start();
                     }
                 }
                 else {
                     this._subTasks[serviceKey] = service.ForwardProcessLogs(this._cancelToken.Token);
-                    this._subTasks[serviceKey].Start();
                 }
             }
         }
