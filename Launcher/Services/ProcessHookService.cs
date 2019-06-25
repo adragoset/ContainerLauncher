@@ -64,7 +64,7 @@ namespace Launcher.Services
         public async void ForwardProcessLogs()
         {
             Stream logStream = await this.LogStream();
-            logger.LogInformation($"Logging information for:{processHook.SafeName}");
+            logger.LogInformation($"ForwardProcess Logs for:{processHook.SafeName}");
             if (logStream != null)
             {
                 var stream = new StreamReader(logStream);
