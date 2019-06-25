@@ -70,7 +70,7 @@ namespace Launcher.Services
 
             foreach (var child in serviceSection)
             {
-                configLogger.LogInformation($"Reading config for service:{child}");
+                configLogger.LogInformation($"Reading config for service:{child.Key}");
                 var dockerClient = services.GetService<DockerClient>();
                 var logger = services.GetService<ILogger<ProcessHookService>>();
                 var hookConfig = new ContainerHookConfig();
