@@ -75,11 +75,14 @@ namespace Launcher.Services
                 var logger = services.GetService<ILogger<ProcessHookService>>();
                 var hookConfig = new ContainerHookConfig();
                 hookConfig.Capabilities = child.GetSection("capabilities").Get<List<string>>();
-                using (logger.BeginScope(child.Key))
+                if (hookConfig.Capabilities != null)
                 {
-                    foreach (var cap in hookConfig.Capabilities)
+                    using (logger.BeginScope(child.Key))
                     {
-                        logger.LogDebug(cap);
+                        foreach (var cap in hookConfig.Capabilities)
+                        {
+                            logger.LogDebug(cap);
+                        }
                     }
                 }
 
