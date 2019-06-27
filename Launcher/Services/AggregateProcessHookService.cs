@@ -74,7 +74,7 @@ namespace Launcher.Services
                 var dockerClient = services.GetService<DockerClient>();
                 var logger = services.GetService<ILogger<ProcessHookService>>();
                 var hookConfig = new ContainerHookConfig();
-                hookConfig.Capabilities = child.GetValue<List<string>>("capabilities");
+                hookConfig.Capabilities = child.GetSection("capabilities").Get<List<string>>();
                 using (logger.BeginScope(child.Key))
                 {
                     foreach (var cap in hookConfig.Capabilities)
