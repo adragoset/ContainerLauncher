@@ -21,7 +21,7 @@ namespace Launcher.Models
 
         Task<bool> StopProcess();
 
-        Task CleanupProcess();
+        Task CleanupProcess(ILogger logger);
 
         Task<Stream> GetLogs();
     }

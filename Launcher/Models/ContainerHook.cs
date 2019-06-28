@@ -161,39 +161,40 @@ namespace Launcher.Models
             }
         }
 
-        public async Task CleanupProcess()
+        public async Task CleanupProcess(ILogger logger)
         {
             var container = await this.container();
+            logger.LogInformation($"Stopping container:{this.SafeName}");
             await this.stopContainer(container.ID);
             var rmPara = new ContainerRemoveParameters();
             rmPara.Force = true;
+            logger.LogInformation($"Removing container:{this.SafeName}");
             await this.client.Containers.RemoveContainerAsync(container.ID, rmPara, this.cancelTokenSource.Token);
             var delPara = new ImageDeleteParameters();
             delPara.Force = true;
+            logger.LogInformation($"Removing image:{container.Image}");
             await this.client.Images.DeleteImageAsync(container.Image, delPara, this.cancelTokenSource.Token);
         }
 
         public async Task<bool> StartProcess(ILogger logger)
         {
             await this.pullImage(logger);
-            var updatedConfig = await this.buildConfigFolders();
+            var updatedConfig = await this.buildConfigFolders(logger);
             var container = await this.container();
             if (container == null)
             {
-                var id = await this.createContainer();
-                return await this.startContainer(id);
+                var id = await this.createContainer(logger);
+                return await this.startContainer(id, logger);
             }
             else
             {
                 if (container.Image != this.ImageName || this.forceUpgrade)
                 {
-                    logger.LogInformation($"Version changed upgrading container:{this.SafeName}");
-                    return await this.upgradeProcess();
+                    return await this.upgradeProcess(logger);
                 }
                 else if (updatedConfig)
                 {
-                    logger.LogInformation($"Configuration changed restarting container:{this.SafeName}");
-                    return await this.restartContainer(await this.ContainerId());
+                    return await this.restartContainer(await this.ContainerId(), logger);
                 }
 
                 return true;
@@ -241,16 +242,18 @@ namespace Launcher.Models
 
         private async Task pullImage(ILogger logger)
         {
-
+            logger.LogInformation($"Pulling image:{this.SafeName}");
             await client.Images.CreateImageAsync(new ImagesCreateParameters
             {
                 FromImage = this.Name,
                 Tag = this.Tag,
             }, this.authConfig, new Progress(logger), this.cancelTokenSource.Token);
+            logger.LogInformation($"Completed pulling image:{this.SafeName}");
         }
 
-        private async Task<string> createContainer()
+        private async Task<string> createContainer(ILogger logger)
         {
+            logger.LogInformation($"Creating container for:{this.SafeName}");
             var para = new CreateContainerParameters();
             para.Image = this.ImageName;
             para.Name = this.SafeName;
@@ -304,28 +307,32 @@ namespace Launcher.Models
 
             //create the container
             var result = await this.client.Containers.CreateContainerAsync(para, this.cancelTokenSource.Token);
+            logger.LogInformation($"Container cration finished for:{this.SafeName}");
             return result.ID;
         }
 
-        private async Task<bool> startContainer(string id)
+        private async Task<bool> startContainer(string id, ILogger logger)
         {
+            logger.LogInformation($"Start container:{this.SafeName}");
             var para = new ContainerStartParameters();
             return await this.client.Containers.StartContainerAsync(id, para, this.cancelTokenSource.Token);
         }
 
-        private async Task<bool> restartContainer(string id)
+        private async Task<bool> restartContainer(string id, ILogger logger)
         {
             var par = new ContainerRestartParameters();
             par.WaitBeforeKillSeconds = 30;
+            logger.LogInformation($"Restarting container:{this.SafeName}");
             await this.client.Containers.RestartContainerAsync(id, par, this.cancelTokenSource.Token);
             return true;
         }
 
-        private async Task<bool> upgradeProcess()
+        private async Task<bool> upgradeProcess(ILogger logger)
         {
-            await this.CleanupProcess();
-            var id = await this.createContainer();
-            return await this.startContainer(id);
+            logger.LogInformation($"Upgrading container:{this.SafeName}");
+            await this.CleanupProcess(logger);
+            var id = await this.createContainer(logger);
+            return await this.startContainer(id, logger);
         }
 
         private async Task<bool> stopContainer(string id)
@@ -356,9 +363,10 @@ namespace Launcher.Models
             return sBuilder.ToString();
         }
 
-        private async Task<bool> buildConfigFolders()
+        private async Task<bool> buildConfigFolders(ILogger logger)
         {
             bool updated = false;
+            logger.LogInformation($"Building configuration for:{this.SafeName}");
             if (this.configSrc != null)
             {
                 if (!Directory.Exists(this.configVolSrc))
@@ -415,7 +423,7 @@ namespace Launcher.Models
                     }
                 }
             }
-
+            logger.LogInformation($"Configuration built for:{this.SafeName}");
             return updated;
         }
 
@@ -446,7 +454,7 @@ namespace Launcher.Models
             }
             public void Report(JSONMessage value)
             {
-                logger.LogInformation($"Progress:{value.Progress.Current}");
+                logger.LogInformation($"Progress:{value.ProgressMessage}");
             }
         }
     }

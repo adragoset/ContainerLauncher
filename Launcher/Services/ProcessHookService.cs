@@ -33,7 +33,6 @@ namespace Launcher.Services
         {
             using (this.logger.BeginScope(this.processHook.SafeName))
             {
-                this.logger.LogInformation($"Starting container:{this.processHook.ImageName}");
                 return await this.processHook.StartProcess(this.logger);
             }
         }
