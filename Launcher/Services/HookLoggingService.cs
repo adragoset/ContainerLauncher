@@ -65,9 +65,13 @@ namespace Launcher.Services
                 if (this._subTasks.ContainsKey(serviceKey))
                 {
                     var task = this._subTasks[serviceKey];
-                    if (task.LogTask.Status != TaskStatus.Running)
+                    if (task.LogTask.Status != TaskStatus.Running || 
+                    task.LogTask.Status != TaskStatus.WaitingForActivation || 
+                    task.LogTask.Status != TaskStatus.WaitingForChildrenToComplete || 
+                    task.LogTask.Status != TaskStatus.WaitingToRun || 
+                    task.LogTask.Status != TaskStatus.Created)
                     {
-
+                        this._logger.LogInformation($"Logging Task:{serviceKey} Status:{task.LogTask.Status}");
                         task.Dispose();
                         this._logger.LogInformation($"Restarting logging task for:{serviceKey}");
                         this._subTasks[serviceKey] = new LoggingTaskRecord(service);
