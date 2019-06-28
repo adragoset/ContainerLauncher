@@ -62,6 +62,7 @@ namespace Launcher.Services
                     var task = this._subTasks[serviceKey];
                     if(task.IsFaulted || task.IsCompleted || task.IsCompletedSuccessfully) {
                         task.Dispose();
+                        this._logger.LogInformation($"Creating new Forwarding task for {serviceKey}");
                         this._subTasks[serviceKey] = service.ForwardProcessLogs(this._cancelToken.Token);
                     }
                 }
