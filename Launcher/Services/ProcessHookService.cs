@@ -81,7 +81,7 @@ namespace Launcher.Services
                         }
 
                         var clean = CleanInput(line);
-                        if (clean != null && clean != "")
+                        if (clean != null && clean != String.Empty && clean != " ")
                         {
                             lines.Add(clean);
                         }
