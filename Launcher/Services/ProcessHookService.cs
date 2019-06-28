@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -12,7 +13,7 @@ namespace Launcher.Services
     public class ProcessHookService : IDisposable
     {
         private ContainerHook processHook;
-        private Stream logStream;
+        private StreamReader logStream;
         private bool disposedValue = false; // To detect redundant calls
         private ILogger<ProcessHookService> logger;
         public string Name
@@ -37,22 +38,22 @@ namespace Launcher.Services
             }
         }
 
-        public async Task<Stream> LogStream()
+        public async Task<StreamReader> LogStream()
         {
             if (this.logStream == null)
             {
                 if (await this.processHook.IsRunning())
                 {
-                    this.logStream = await this.processHook.GetLogs();
+                    this.logStream = new StreamReader(await this.processHook.GetLogs());
                 }
             }
             else
             {
-                if (!this.logStream.CanRead)
+                if (this.logStream.EndOfStream || !this.logStream.BaseStream.CanRead)
                 {
                     this.logStream.Close();
                     this.logStream.Dispose();
-                    this.logStream = await this.processHook.GetLogs();
+                    this.logStream = new StreamReader(await this.processHook.GetLogs());
                 }
             }
             return this.logStream;
@@ -65,21 +66,30 @@ namespace Launcher.Services
 
         public async Task ForwardProcessLogs(CancellationToken token)
         {
-            Stream logStream = await this.LogStream();
+            StreamReader logStream = await this.LogStream();
             if (logStream != null)
             {
-                var stream = new StreamReader(logStream);
                 string line;
                 using (logger.BeginScope(processHook.SafeName))
                 {
-                    while ((line = stream.ReadLine()) != null)
+                    List<string> lines = new List<string>();
+                    while ((line = logStream.ReadLine()) != null)
                     {
                         if (token.IsCancellationRequested)
                         {
                             break;
                         }
-                        
-                        logger.LogInformation(CleanInput(line));
+
+                        var clean = CleanInput(line);
+                        if (clean != null && clean != "")
+                        {
+                            lines.Add(clean);
+                        }
+                    }
+
+                    if (!token.IsCancellationRequested)
+                    {
+                        logger.LogInformation(string.Join("\n", lines));
                     }
                 }
             }
@@ -106,7 +116,7 @@ namespace Launcher.Services
             {
                 if (disposing)
                 {
-                    if (this.logStream.CanRead)
+                    if (this.logStream.BaseStream.CanRead)
                     {
                         this.logStream.Close();
                     }

@@ -27,7 +27,7 @@ namespace Launcher.Services
 
         public void Dispose()
         {
-            _timer?.Dispose();
+            _timer.Dispose();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
@@ -39,7 +39,7 @@ namespace Launcher.Services
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            return Task.Run(async () =>
+            _timer = Task.Run(async () =>
             {
                 while (true)
                 {
@@ -49,6 +49,8 @@ namespace Launcher.Services
                         break;
                 }
             });
+
+            return _timer;
         }
 
         private void DoWork()
