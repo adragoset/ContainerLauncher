@@ -65,7 +65,7 @@ namespace Launcher.Services
                 if (this._subTasks.ContainsKey(serviceKey))
                 {
                     var task = this._subTasks[serviceKey];
-                    if (task.LogTask.IsFaulted || task.LogTask.IsCompleted || task.LogTask.IsCompletedSuccessfully)
+                    if (task.LogTask.Status != TaskStatus.Running)
                     {
                         task.Dispose();
                         this._logger.LogInformation($"Restarting logging task for:{serviceKey}");
