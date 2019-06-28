@@ -191,6 +191,7 @@ namespace Launcher.Models
                 }
                 else if (updatedConfig)
                 {
+                    logger.LogInformation($"Configuration changed restarting:{this.SafeName}");
                     return await this.restartContainer(await this.ContainerId());
                 }
 
