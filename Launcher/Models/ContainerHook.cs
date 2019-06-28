@@ -446,7 +446,7 @@ namespace Launcher.Models
             }
             public void Report(JSONMessage value)
             {
-                logger.LogInformation(value.ProgressMessage);
+                logger.LogInformation($"Progress:{value.Progress.Current}");
             }
         }
     }

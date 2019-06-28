@@ -72,8 +72,8 @@ namespace Launcher.Services
                 string line;
                 using (logger.BeginScope(processHook.SafeName))
                 {
-                    List<string> lines = new List<string>();
-                    while ((line = logStream.ReadLine()) != null)
+                   
+                    while ((line = await logStream.ReadLineAsync()) != "")
                     {
                         if (token.IsCancellationRequested)
                         {
@@ -83,13 +83,8 @@ namespace Launcher.Services
                         var clean = CleanInput(line);
                         if (clean != null && clean != String.Empty && clean != " ")
                         {
-                            lines.Add(clean);
+                            logger.LogInformation(clean);
                         }
-                    }
-
-                    if (!token.IsCancellationRequested)
-                    {
-                        logger.LogInformation(string.Join("\n", lines));
                     }
                 }
             }
