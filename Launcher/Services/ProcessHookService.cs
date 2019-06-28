@@ -83,7 +83,7 @@ namespace Launcher.Services
                         }
                     }
                 }
-            });
+            }, token);
             t.Start();
             return t;
         }

@@ -67,6 +67,7 @@ namespace Launcher.Services
                     var task = this._subTasks[serviceKey];
                     if (task.LogTask.Status != TaskStatus.Running)
                     {
+
                         task.Dispose();
                         this._logger.LogInformation($"Restarting logging task for:{serviceKey}");
                         this._subTasks[serviceKey] = new LoggingTaskRecord(service);
