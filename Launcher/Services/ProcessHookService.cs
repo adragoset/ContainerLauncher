@@ -49,7 +49,7 @@ namespace Launcher.Services
             }
             else
             {
-                if (this.logStream.EndOfStream || !this.logStream.BaseStream.CanRead)
+                if (await this.processHook.IsRunning() && !this.logStream.BaseStream.CanRead)
                 {
                     this.logStream.Close();
                     this.logStream.Dispose();
