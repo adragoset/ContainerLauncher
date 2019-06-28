@@ -14,7 +14,7 @@ namespace Launcher.Services
         private readonly CancellationTokenSource _cancelToken;
         private Task _timer;
 
-        private Dictionary<string, Task> _subTasks;
+        private Dictionary<string, LoggingTaskRecord> _subTasks;
         private AggregateProcessHookService _procHooks;
 
         public HookLoggingService(AggregateProcessHookService procHooks, ILogger<HookLoggingService> _logger)
@@ -22,12 +22,16 @@ namespace Launcher.Services
             this._procHooks = procHooks;
             this._logger = _logger;
             this._cancelToken = new CancellationTokenSource();
-            this._subTasks = new Dictionary<string,Task>();
+            this._subTasks = new Dictionary<string, LoggingTaskRecord>();
         }
 
         public void Dispose()
         {
             _timer.Dispose();
+            foreach (var t in this._subTasks.Keys)
+            {
+                this._subTasks[t].Dispose();
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
@@ -58,18 +62,39 @@ namespace Launcher.Services
             foreach (var serviceKey in this._procHooks.Processes())
             {
                 var service = this._procHooks.GetProcess(serviceKey);
-                if(this._subTasks.ContainsKey(serviceKey)) {
+                if (this._subTasks.ContainsKey(serviceKey))
+                {
                     var task = this._subTasks[serviceKey];
-                    if(task.IsFaulted || task.IsCompleted || task.IsCompletedSuccessfully) {
+                    if (task.LogTask.IsFaulted || task.LogTask.IsCompleted || task.LogTask.IsCompletedSuccessfully)
+                    {
                         task.Dispose();
                         this._logger.LogInformation($"Restarting logging task for:{serviceKey}");
-                        this._subTasks[serviceKey] = service.ForwardProcessLogs(this._cancelToken.Token);
+                        this._subTasks[serviceKey] = new LoggingTaskRecord(service);
                     }
                 }
-                else {
+                else
+                {
                     this._logger.LogInformation($"Starting logging task for:{serviceKey}");
-                    this._subTasks[serviceKey] = service.ForwardProcessLogs(this._cancelToken.Token);
+                    this._subTasks[serviceKey] = new LoggingTaskRecord(service);
                 }
+            }
+        }
+
+        private class LoggingTaskRecord : IDisposable
+        {
+            public Task LogTask;
+            public CancellationTokenSource TokenSource;
+
+            public LoggingTaskRecord(ProcessHookService logTask)
+            {
+                this.TokenSource = new CancellationTokenSource();
+                this.LogTask = logTask.ForwardProcessLogs(this.TokenSource.Token);
+            }
+
+            public void Dispose()
+            {
+                this.TokenSource.Cancel();
+                this.LogTask.Dispose();
             }
         }
     }

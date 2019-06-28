@@ -90,9 +90,7 @@ namespace Launcher.Services
                     }
                 }
             });
-
             t.Start();
-
             return t;
         }
 
