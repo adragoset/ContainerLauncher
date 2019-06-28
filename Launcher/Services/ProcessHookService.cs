@@ -63,30 +63,33 @@ namespace Launcher.Services
             return await this.processHook.IsFailed();
         }
 
-        public async Task ForwardProcessLogs(CancellationToken token)
+        public Task ForwardProcessLogs(CancellationToken token)
         {
-            StreamReader logStream = await this.LogStream();
-            if (logStream != null)
+            return new Task(async () =>
             {
-                string line;
-                using (logger.BeginScope(processHook.SafeName))
+                StreamReader logStream = await this.LogStream();
+                if (logStream != null)
                 {
-                   
-                    while ((line = await logStream.ReadLineAsync()) != "")
+                    string line;
+                    using (logger.BeginScope(processHook.SafeName))
                     {
-                        if (token.IsCancellationRequested)
-                        {
-                            break;
-                        }
 
-                        var clean = CleanInput(line);
-                        if (clean != null && clean != String.Empty && clean != " ")
+                        while ((line = await logStream.ReadLineAsync()) != "")
                         {
-                            logger.LogInformation(clean);
+                            if (token.IsCancellationRequested)
+                            {
+                                break;
+                            }
+
+                            var clean = CleanInput(line);
+                            if (clean != null && clean != String.Empty && clean != " ")
+                            {
+                                logger.LogInformation(clean);
+                            }
                         }
                     }
                 }
-            }
+            });
         }
 
         static string CleanInput(string strIn)
