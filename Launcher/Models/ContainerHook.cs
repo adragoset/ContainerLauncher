@@ -187,11 +187,12 @@ namespace Launcher.Models
             {
                 if (container.Image != this.ImageName || this.forceUpgrade)
                 {
+                    logger.LogInformation($"Version changed upgrading container:{this.SafeName}");
                     return await this.upgradeProcess();
                 }
                 else if (updatedConfig)
                 {
-                    logger.LogInformation($"Configuration changed restarting:{this.SafeName}");
+                    logger.LogInformation($"Configuration changed restarting container:{this.SafeName}");
                     return await this.restartContainer(await this.ContainerId());
                 }
 
