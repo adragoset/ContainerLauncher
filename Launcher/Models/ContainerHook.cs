@@ -191,8 +191,7 @@ namespace Launcher.Models
                 }
                 else if (updatedConfig)
                 {
-                    this.restartContainer(await this.ContainerId());
-                    return true;
+                    return await this.restartContainer(await this.ContainerId());
                 }
 
                 return true;
@@ -312,11 +311,12 @@ namespace Launcher.Models
             return await this.client.Containers.StartContainerAsync(id, para, this.cancelTokenSource.Token);
         }
 
-        private async void restartContainer(string id)
+        private async Task<bool> restartContainer(string id)
         {
             var par = new ContainerRestartParameters();
             par.WaitBeforeKillSeconds = 30;
             await this.client.Containers.RestartContainerAsync(id, par, this.cancelTokenSource.Token);
+            return true;
         }
 
         private async Task<bool> upgradeProcess()
