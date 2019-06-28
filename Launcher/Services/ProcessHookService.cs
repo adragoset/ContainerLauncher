@@ -65,7 +65,7 @@ namespace Launcher.Services
 
         public Task ForwardProcessLogs(CancellationToken token)
         {
-            return new Task(async () =>
+            var t = new Task(async () =>
             {
                 StreamReader logStream = await this.LogStream();
                 if (logStream != null)
@@ -90,6 +90,10 @@ namespace Launcher.Services
                     }
                 }
             });
+
+            t.Start();
+
+            return t;
         }
 
         static string CleanInput(string strIn)
