@@ -73,8 +73,7 @@ namespace Launcher.Services
                     string line;
                     using (logger.BeginScope(processHook.SafeName))
                     {
-
-                        while ((line = await logStream.ReadLineAsync()) != "")
+                        while ((line = await logStream.ReadLineAsync()) != null)
                         {
                             if (token.IsCancellationRequested)
                             {
