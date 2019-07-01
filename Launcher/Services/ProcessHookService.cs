@@ -16,8 +16,8 @@ namespace Launcher.Services
         private StreamReader logStream;
         private bool disposedValue = false; // To detect redundant calls
         private ILogger<ProcessHookService> logger;
-        private static SemaphoreSlim logStreamLock = new SemaphoreSlim(1, 1);
-        private static SemaphoreSlim logForwardLock = new SemaphoreSlim(1, 1);
+        private SemaphoreSlim logStreamLock = new SemaphoreSlim(1, 1);
+        private SemaphoreSlim logForwardLock = new SemaphoreSlim(1, 1);
         public string Name
         {
             get { return this.processHook.SafeName; }
