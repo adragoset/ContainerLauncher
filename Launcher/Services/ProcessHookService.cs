@@ -16,6 +16,8 @@ namespace Launcher.Services
         private StreamReader logStream;
         private bool disposedValue = false; // To detect redundant calls
         private ILogger<ProcessHookService> logger;
+        private static SemaphoreSlim logStreamLock = new SemaphoreSlim(1, 1);
+        private static SemaphoreSlim logForwardLock = new SemaphoreSlim(1, 1);
         public string Name
         {
             get { return this.processHook.SafeName; }
@@ -39,23 +41,31 @@ namespace Launcher.Services
 
         public async Task<StreamReader> LogStream()
         {
-            if (this.logStream == null)
+            await logStreamLock.WaitAsync();
+            try
             {
-                if (await this.processHook.IsRunning())
+                if (this.logStream == null)
                 {
-                    this.logStream = new StreamReader(await this.processHook.GetLogs());
+                    if (await this.processHook.IsRunning())
+                    {
+                        this.logStream = new StreamReader(await this.processHook.GetLogs());
+                    }
                 }
+                else
+                {
+                    if (await this.processHook.IsRunning() && !this.logStream.BaseStream.CanRead)
+                    {
+                        this.logStream.Close();
+                        this.logStream.Dispose();
+                        this.logStream = new StreamReader(await this.processHook.GetLogs());
+                    }
+                }
+                return this.logStream;
             }
-            else
+            finally
             {
-                if (await this.processHook.IsRunning() && !this.logStream.BaseStream.CanRead)
-                {
-                    this.logStream.Close();
-                    this.logStream.Dispose();
-                    this.logStream = new StreamReader(await this.processHook.GetLogs());
-                }
+                logStreamLock.Release();
             }
-            return this.logStream;
         }
 
         public async Task<bool> Healthy()
@@ -67,21 +77,29 @@ namespace Launcher.Services
         {
             var t = new Task(async () =>
             {
-                StreamReader logStream = await this.LogStream();
-                if (logStream != null)
+                await logForwardLock.WaitAsync();
+                try
                 {
-                    string line;
-                    using (logger.BeginScope(processHook.SafeName))
+                    StreamReader logStream = await this.LogStream();
+                    if (logStream != null)
                     {
-                        while ((line = await logStream.ReadLineAsync()) != null && !token.IsCancellationRequested)
+                        string line;
+                        using (logger.BeginScope(processHook.SafeName))
                         {
-                            var clean = CleanInput(line);
-                            if (clean != null && clean != String.Empty && clean != " ")
+                            while ((line = await logStream.ReadLineAsync()) != null && !token.IsCancellationRequested)
                             {
-                                logger.LogInformation(clean);
+                                var clean = CleanInput(line);
+                                if (clean != null && clean != String.Empty && clean != " ")
+                                {
+                                    logger.LogInformation(clean);
+                                }
                             }
                         }
                     }
+                }
+                finally
+                {
+                    await logForwardLock.WaitAsync();
                 }
             }, token);
             t.Start();
