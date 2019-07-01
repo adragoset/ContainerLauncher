@@ -84,12 +84,11 @@ namespace Launcher.Services
                     StreamReader logStream = await this.LogStream();
                     if (logStream != null)
                     {
-                        string line;
                         using (logger.BeginScope(processHook.SafeName))
                         {
-                            while ((line = await logStream.ReadLineAsync()) != null && !token.IsCancellationRequested)
+                            while (logStream.Peek() >= 0 && !token.IsCancellationRequested)
                             {
-                                var clean = CleanInput(line);
+                                var clean = CleanInput(await logStream.ReadLineAsync());                               
                                 if (clean != null && clean != String.Empty && clean != " ")
                                 {
                                     logger.LogInformation(clean);
