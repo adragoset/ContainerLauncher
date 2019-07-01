@@ -55,6 +55,7 @@ namespace Launcher.Services
                 {
                     if (await this.processHook.IsRunning() && !this.logStream.BaseStream.CanRead)
                     {
+                        this.logger.LogInformation($"Recreating log stream for:{this.Name}");
                         this.logStream.Close();
                         this.logStream.Dispose();
                         this.logStream = new StreamReader(await this.processHook.GetLogs());
