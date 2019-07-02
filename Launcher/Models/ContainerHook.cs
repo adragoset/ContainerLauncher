@@ -215,7 +215,6 @@ namespace Launcher.Models
                 Follow = true,
                 Tail = "25"
             };
-
             return await this.client.Containers.GetContainerLogsAsync(await this.ContainerId(), para, this.cancelTokenSource.Token);
         }
 
