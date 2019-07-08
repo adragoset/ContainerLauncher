@@ -13,7 +13,6 @@ namespace Launcher.Services
         private readonly ILogger<HookLoggingService> _logger;
         private readonly CancellationTokenSource _cancelToken;
         private Task _timer;
-
         private Dictionary<string, LoggingTaskRecord> _subTasks;
         private AggregateProcessHookService _procHooks;
 

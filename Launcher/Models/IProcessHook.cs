@@ -23,6 +23,6 @@ namespace Launcher.Models
 
         Task CleanupProcess(ILogger logger);
 
-        Task<Stream> GetLogs();
+        Task<Stream> GetLogs(bool follow, string tail);
     }
 }

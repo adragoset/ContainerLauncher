@@ -206,14 +206,14 @@ namespace Launcher.Models
             return await this.stopContainer(await this.ContainerId());
         }
 
-        public async Task<Stream> GetLogs()
+        public async Task<Stream> GetLogs(bool follow, string tail)
         {
             var para = new ContainerLogsParameters()
             {
                 ShowStderr = true,
                 ShowStdout = true,
-                Follow = true,
-                Tail = "25"
+                Follow = follow,
+                Tail = tail
             };
             return await this.client.Containers.GetContainerLogsAsync(await this.ContainerId(), para, this.cancelTokenSource.Token);
         }

@@ -39,7 +39,7 @@ namespace Launcher.Services
             }
         }
 
-        public async Task<StreamReader> LogStream()
+        private async Task<StreamReader> LogStream(bool follow = true, string tail = "25")
         {
             await logStreamLock.WaitAsync();
             try
@@ -48,7 +48,7 @@ namespace Launcher.Services
                 {
                     if (await this.processHook.IsRunning())
                     {
-                        this.logStream = new StreamReader(await this.processHook.GetLogs());
+                        this.logStream = new StreamReader(await this.processHook.GetLogs(follow, tail));
                     }
                 }
                 else
@@ -58,7 +58,7 @@ namespace Launcher.Services
                         this.logger.LogInformation($"Recreating log stream for:{this.Name}");
                         this.logStream.Close();
                         this.logStream.Dispose();
-                        this.logStream = new StreamReader(await this.processHook.GetLogs());
+                        this.logStream = new StreamReader(await this.processHook.GetLogs(follow, tail));
                     }
                 }
                 return this.logStream;
@@ -72,6 +72,12 @@ namespace Launcher.Services
         public async Task<bool> Healthy()
         {
             return await this.processHook.IsFailed();
+        }
+
+        public async Task<string> GetLogs(bool follow, string tail)
+        {
+            StreamReader logStream = await this.LogStream(follow, tail);
+            return await logStream.ReadToEndAsync();
         }
 
         public Task ForwardProcessLogs(CancellationToken token)
@@ -88,7 +94,7 @@ namespace Launcher.Services
                         {
                             while (logStream.Peek() >= 0 && !token.IsCancellationRequested)
                             {
-                                var clean = CleanInput(await logStream.ReadLineAsync());                               
+                                var clean = CleanInput(await logStream.ReadLineAsync());
                                 if (clean != null && clean != String.Empty && clean != " ")
                                 {
                                     logger.LogInformation(clean);
