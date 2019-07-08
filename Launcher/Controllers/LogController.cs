@@ -17,6 +17,7 @@ namespace Launcher.Controllers
         }
 
         [HttpGet]
+        [Route("{name}")]
         public async Task<JsonResult> Get(string name)
         {
             var service = this.processes.GetProcess(name);
