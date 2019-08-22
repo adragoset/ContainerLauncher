@@ -19,6 +19,7 @@ namespace Launcher.Models
         private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
         private readonly Dictionary<string, string> mounts;
         private readonly Dictionary<string, string> envVars;
+        private readonly Dictionary<string, string> portMappings;
         private readonly string networkMode;
         private readonly List<string> capabilities;
         private readonly long memoryReservation;
@@ -65,6 +66,7 @@ namespace Launcher.Models
             this.configVolSrc = config.ConfigVolSrc;
             this.configVolDest = config.ConfigVolDest;
             this.mounts = config.Mounts;
+            this.portMappings = config.PortMappings;
             this.envVars = config.EnvVariables;
             this.networkMode = config.NetworkMode;
             this.capabilities = config.Capabilities;
@@ -269,6 +271,19 @@ namespace Launcher.Models
             {
                 Name = this.restartPolicy
             };
+
+            para.HostConfig.PortBindings = new Dictionary<string, IList<PortBinding>>();
+            //port mappings
+            foreach (var port in this.portMappings.Keys) {
+                para.HostConfig.PortBindings.Add(this.portMappings[port], new List<PortBinding> { new PortBinding { HostPort = port } });
+            }
+
+            //port mappings
+            para.ExposedPorts = new Dictionary<string, EmptyStruct>();
+            foreach (var port in this.portMappings.Keys) {
+                para.ExposedPorts.Add(port.ToString(), new EmptyStruct() {});
+
+            }
 
             //setup the config folder bind mounts
             para.HostConfig.Mounts = new List<Mount>();

@@ -102,6 +102,11 @@ namespace Launcher.Services
                 .Select(item => new KeyValuePair<string, string>(item.Key, item.Value))
                 .ToDictionary(x => x.Key, x => x.Value);
 
+                hookConfig.PortMappings = child.GetSection("ports")
+                .GetChildren()
+                .Select(item => new KeyValuePair<string, string>(item.Key, item.Value))
+                .ToDictionary(x => x.Key, x => x.Value);
+
                 hookConfig.Mounts = child.GetSection("mounts")
                 .GetChildren()
                 .Select(item => new KeyValuePair<string, string>(item.Key, item.Value))

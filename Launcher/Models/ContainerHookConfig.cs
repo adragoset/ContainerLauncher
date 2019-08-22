@@ -12,6 +12,7 @@ namespace Launcher.Models {
         public string ConfigVolDest;
         public List<string> Capabilities;
         public Dictionary<string, string> Mounts;
+        public Dictionary<string, string> PortMappings;
         public Dictionary<string, string> EnvVariables;
         public string NetworkMode;
         public long MemCap;
