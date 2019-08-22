@@ -390,7 +390,11 @@ namespace Launcher.Models
                     var srcDir = Directory.CreateDirectory(this.configVolSrc);
                 }
 
-                var srcFiles = dirSearch(this.configSrc);
+                List<string> srcFiles = new List<string>();
+
+                if(Directory.Exists(this.configSrc)) {
+                    srcFiles = dirSearch(this.configSrc);
+                }
 
                 foreach (var file in srcFiles)
                 {
