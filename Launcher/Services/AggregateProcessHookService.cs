@@ -97,20 +97,29 @@ namespace Launcher.Services
                 hookConfig.Privileged = child.GetValue<bool>("privileged", false);
                 hookConfig.SetRestartPolicy(child.GetValue<string>("restartPolicy", "no"));
 
-                hookConfig.EnvVariables = child.GetSection("env")
-                .GetChildren()
-                .Select(item => new KeyValuePair<string, string>(item.Key, item.Value))
-                .ToDictionary(x => x.Key, x => x.Value);
+                if (child.GetSection("env").Exists())
+                {
+                    hookConfig.EnvVariables = child.GetSection("env")
+                    .GetChildren()
+                    .Select(item => new KeyValuePair<string, string>(item.Key, item.Value))
+                    .ToDictionary(x => x.Key, x => x.Value);
+                }
 
-                hookConfig.PortMappings = child.GetSection("ports")
-                .GetChildren()
-                .Select(item => new KeyValuePair<string, string>(item.Key, item.Value))
-                .ToDictionary(x => x.Key, x => x.Value);
+                if (child.GetSection("ports").Exists())
+                {
+                    hookConfig.PortMappings = child.GetSection("ports")
+                    .GetChildren()
+                    .Select(item => new KeyValuePair<string, string>(item.Key, item.Value))
+                    .ToDictionary(x => x.Key, x => x.Value);
+                }
 
-                hookConfig.Mounts = child.GetSection("mounts")
-                .GetChildren()
-                .Select(item => new KeyValuePair<string, string>(item.Key, item.Value))
-                .ToDictionary(x => x.Key, x => x.Value);
+                if (child.GetSection("mounts").Exists())
+                {
+                    hookConfig.Mounts = child.GetSection("mounts")
+                    .GetChildren()
+                    .Select(item => new KeyValuePair<string, string>(item.Key, item.Value))
+                    .ToDictionary(x => x.Key, x => x.Value);
+                }
 
                 hookConfig.Name = child.GetValue<string>("imageName");
                 hookConfig.NetworkMode = child.GetValue<string>("networkMode", "bridge");

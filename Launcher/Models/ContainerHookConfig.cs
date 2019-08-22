@@ -11,9 +11,9 @@ namespace Launcher.Models {
         public string ConfigVolSrc;
         public string ConfigVolDest;
         public List<string> Capabilities;
-        public Dictionary<string, string> Mounts;
-        public Dictionary<string, string> PortMappings;
-        public Dictionary<string, string> EnvVariables;
+        public Dictionary<string, string> Mounts = new Dictionary<string, string>();
+        public Dictionary<string, string> PortMappings = new Dictionary<string, string>();
+        public Dictionary<string, string> EnvVariables = new Dictionary<string, string>();
         public string NetworkMode;
         public long MemCap;
         public long CpuPercent;
