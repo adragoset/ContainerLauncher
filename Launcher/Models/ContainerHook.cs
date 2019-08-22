@@ -276,14 +276,16 @@ namespace Launcher.Models
             //port mappings
             foreach (var port in this.portMappings.Keys)
             {
-                para.HostConfig.PortBindings.Add(this.portMappings[port], new List<PortBinding> { new PortBinding { HostPort = port } });
+                para.HostConfig.PortBindings.Add(this.portMappings[port], new List<PortBinding> { new PortBinding { HostPort = port  } });
             }
+
+            logger.LogInformation(para.HostConfig.PortBindings.ToString());
 
             //port mappings
             para.ExposedPorts = new Dictionary<string, EmptyStruct>();
             foreach (var port in this.portMappings.Keys)
             {
-                para.ExposedPorts.Add(port.ToString(), new EmptyStruct() { });
+                para.ExposedPorts.Add(port, new EmptyStruct() { });
 
             }
 
