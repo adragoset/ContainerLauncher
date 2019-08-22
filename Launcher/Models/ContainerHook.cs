@@ -279,7 +279,7 @@ namespace Launcher.Models
                 para.HostConfig.PortBindings.Add(this.portMappings[port], new List<PortBinding> { new PortBinding { HostPort = port  } });
             }
 
-            logger.LogInformation(para.HostConfig.PortBindings.ToString());
+            logger.LogInformation("Container Port Mapping:{" + string.Join(",", para.HostConfig.PortBindings.Select(kv => kv.Key + "=" + kv.Value.Select(v => v.HostPort)).ToArray()) + "}");
 
             //port mappings
             para.ExposedPorts = new Dictionary<string, EmptyStruct>();
@@ -314,6 +314,7 @@ namespace Launcher.Models
             }
 
             para.HostConfig.NetworkMode = this.networkMode;
+            logger.LogInformation($"NetworkMode:{para.HostConfig.NetworkMode}");
 
             //set system resource limits
             para.HostConfig.MemoryReservation = this.memoryReservation;
