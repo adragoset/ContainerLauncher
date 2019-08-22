@@ -274,14 +274,16 @@ namespace Launcher.Models
 
             para.HostConfig.PortBindings = new Dictionary<string, IList<PortBinding>>();
             //port mappings
-            foreach (var port in this.portMappings.Keys) {
+            foreach (var port in this.portMappings.Keys)
+            {
                 para.HostConfig.PortBindings.Add(this.portMappings[port], new List<PortBinding> { new PortBinding { HostPort = port } });
             }
 
             //port mappings
             para.ExposedPorts = new Dictionary<string, EmptyStruct>();
-            foreach (var port in this.portMappings.Keys) {
-                para.ExposedPorts.Add(port.ToString(), new EmptyStruct() {});
+            foreach (var port in this.portMappings.Keys)
+            {
+                para.ExposedPorts.Add(port.ToString(), new EmptyStruct() { });
 
             }
 
@@ -424,16 +426,18 @@ namespace Launcher.Models
                     }
                 }
 
-
-                foreach (var file in dirSearch(this.configVolSrc))
+                if (Directory.Exists(this.configVolSrc))
                 {
-                    var relativePath = Path.GetRelativePath(this.configVolSrc, file);
-                    var destPath = Path.Combine(this.configSrc, relativePath);
-
-                    if (!File.Exists(destPath))
+                    foreach (var file in dirSearch(this.configVolSrc))
                     {
-                        File.Delete(file);
-                        updated = true;
+                        var relativePath = Path.GetRelativePath(this.configVolSrc, file);
+                        var destPath = Path.Combine(this.configSrc, relativePath);
+
+                        if (!File.Exists(destPath))
+                        {
+                            File.Delete(file);
+                            updated = true;
+                        }
                     }
                 }
             }
