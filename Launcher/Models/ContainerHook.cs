@@ -276,7 +276,7 @@ namespace Launcher.Models
             //port mappings
             foreach (var port in this.portMappings.Keys)
             {
-                para.HostConfig.PortBindings.Add(this.portMappings[port] + "/tcp", new List<PortBinding> { new PortBinding { HostPort = port  } });
+                para.HostConfig.PortBindings.Add(port + "/tcp", new List<PortBinding> { new PortBinding { HostPort = this.portMappings[port]  } });
             }
 
             logger.LogInformation("Container Port Mapping:{" + string.Join(",", para.HostConfig.PortBindings.Select(kv => kv.Key + "=" + string.Join(",", kv.Value.ToArray().Select(v => v.HostPort))).ToArray()) + "}");
