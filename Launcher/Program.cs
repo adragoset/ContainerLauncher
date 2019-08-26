@@ -29,7 +29,7 @@ namespace Launcher
             .ConfigureLogging((hostingContext, logging) =>
             {
                 // Requires `using Microsoft.Extensions.Logging;`
-                logging.AddConfiguration(hostingContext.Configuration.GetSection("logging"));
+                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                 logging.AddConsole();
                 logging.AddDebug();
                 logging.AddEventSourceLogger();
