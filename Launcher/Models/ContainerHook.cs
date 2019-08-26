@@ -194,7 +194,7 @@ namespace Launcher.Models
                 {
                     return await this.upgradeProcess(logger);
                 }
-                else if (updatedConfig)
+                else if (updatedConfig || !await this.IsRunning())
                 {
                     return await this.restartContainer(await this.ContainerId(), logger);
                 }
