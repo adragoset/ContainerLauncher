@@ -326,7 +326,7 @@ namespace Launcher.Models
 
             //create the container
             var result = await this.client.Containers.CreateContainerAsync(para, this.cancelTokenSource.Token);
-            logger.LogInformation($"Container cration finished for:{this.SafeName}");
+            logger.LogInformation($"Container creation finished for:{this.SafeName}");
             return result.ID;
         }
 

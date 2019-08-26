@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 
 namespace Launcher
@@ -24,6 +25,14 @@ namespace Launcher
                     config_path = Environment.GetEnvironmentVariable("CONFIG_PATH");
                 }
                 config.SetBasePath(config_path);
+            })
+            .ConfigureLogging((hostingContext, logging) =>
+            {
+                // Requires `using Microsoft.Extensions.Logging;`
+                logging.AddConfiguration(hostingContext.Configuration.GetSection("logging"));
+                logging.AddConsole();
+                logging.AddDebug();
+                logging.AddEventSourceLogger();
             })
             .UseStartup<Startup>();
     }
