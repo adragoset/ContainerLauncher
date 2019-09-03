@@ -92,7 +92,6 @@ namespace Launcher.Services
                     hookConfig.ConfigVolSrc = Path.Join(destConfigPath, child.Key);
                     hookConfig.ConfigVolDest = mountConfigPath;
                 }
-                hookConfig.CpuPercent = child.GetValue<long>("cpu");
                 hookConfig.MemCap = child.GetValue<long>("mem");
                 hookConfig.Privileged = child.GetValue<bool>("privileged", false);
                 hookConfig.SetRestartPolicy(child.GetValue<string>("restartPolicy", "no"));

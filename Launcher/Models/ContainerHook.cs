@@ -71,7 +71,6 @@ namespace Launcher.Models
             this.networkMode = config.NetworkMode;
             this.capabilities = config.Capabilities;
             this.memoryReservation = config.MemCap;
-            this.cpuPercent = config.CpuPercent;
             this.privileged = config.Privileged;
             this.restartPolicy = config.RestartPolicy;
             this.authConfig = config.AuthConfig;
@@ -98,11 +97,6 @@ namespace Launcher.Models
             if (config.NetworkMode == null || config.NetworkMode == "")
             {
                 throw new InvalidOperationException("Cannot create a ContainerHook with no NetworkMode");
-            }
-
-            if (config.CpuPercent <= 0)
-            {
-                throw new InvalidOperationException("Cannot create a ContainerHook with CpuPercent < = 0");
             }
 
             if (config.MemCap <= 0)

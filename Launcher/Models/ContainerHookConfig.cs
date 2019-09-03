@@ -16,7 +16,6 @@ namespace Launcher.Models {
         public Dictionary<string, string> EnvVariables = new Dictionary<string, string>();
         public string NetworkMode;
         public long MemCap;
-        public long CpuPercent;
         public bool Privileged;
         public AuthConfig AuthConfig;
         public RestartPolicyKind RestartPolicy { get; private set; }
