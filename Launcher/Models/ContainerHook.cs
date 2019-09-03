@@ -310,9 +310,6 @@ namespace Launcher.Models
             para.HostConfig.NetworkMode = this.networkMode;
             logger.LogInformation($"NetworkMode:{para.HostConfig.NetworkMode}");
 
-            //set system resource limits
-            para.HostConfig.MemoryReservation = this.memoryReservation;
-
             //set capabilities
             para.HostConfig.CapAdd = this.capabilities;
             para.HostConfig.Privileged = this.privileged;
