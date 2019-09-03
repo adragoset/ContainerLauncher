@@ -312,7 +312,6 @@ namespace Launcher.Models
 
             //set system resource limits
             para.HostConfig.MemoryReservation = this.memoryReservation;
-            para.HostConfig.CPUPercent = this.cpuPercent;
 
             //set capabilities
             para.HostConfig.CapAdd = this.capabilities;
